@@ -46,11 +46,12 @@ fetch(CATEGORIES_URL)
    if (form.category.value) params.append('category_id', form.category.value);
   try {
     const resp = await fetch(PROXY_URL + '?' + params.toString(), {
-      headers: { 'Accept-Language': form.lang.value }
+      headers: { 'Accept-Language': form.lang.value || 'uk' }
     });
     const data = await resp.json();
     const tbody = $('#results tbody').empty();
-    (data.data || []).forEach(offer => {
+    const offers = (data.data || []).filter(offer => offer.stats?.views > 2000);
+    offers.forEach(offer => {
       const title = offer.title || '—';
       const price = (offer.price && offer.price.value) || '—';
       const city = (offer.location && offer.location.city) || '—';
