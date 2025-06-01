@@ -18,16 +18,11 @@ params = {
     "sort_by": "created_at:desc",
     "filter_float_price:from": price_min,
     "filter_float_price:to": price_max,
-    "lang": lang,
-
-
-
-
-headers = {
-    "User-Agent": "Mozilla/5.0",
-    "Accept-Language": lang,
 }
+if category.isdigit():
+    params["category_id"] = category
 
+headers = {"User-Agent": "Mozilla/5.0"}
 
 try:
     resp = requests.get(
