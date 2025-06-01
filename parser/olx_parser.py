@@ -10,7 +10,6 @@ category = str(config.get("category", ""))
 keywords = config.get("keywords", "")
 price_min = config.get("price_min", 0)
 price_max = config.get("price_max", 999999)
-lang = config.get("lang", "uk")
 
 params = {
     "query": keywords,
@@ -20,14 +19,15 @@ params = {
     "filter_float_price:from": price_min,
     "filter_float_price:to": price_max,
     "lang": lang,
-}
-if category.isdigit():
-    params["category_id"] = category
+
+
+
 
 headers = {
     "User-Agent": "Mozilla/5.0",
     "Accept-Language": lang,
 }
+
 
 try:
     resp = requests.get(
