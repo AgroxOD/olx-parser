@@ -55,61 +55,7 @@
     <tbody></tbody>
   </table>
 
-  <script>
-    // load categories and init jstree
-    fetch('categories.json')
-      .then(res => res.json())
-      .then(data => {
-        const treeData = Object.entries(data).map(([k, v]) => ({
-          text: k,
-          children: Object.entries(v).map(([ck, cv]) => ({ text: ck, data: cv, icon: 'bi bi-file-earmark' }))
-        }));
-        $('#category-tree').jstree({
-          core: { data: treeData }
-        }).on('select_node.jstree', (e, d) => {
-          if (d.node && d.node.data) {
-            document.querySelector('input[name="category"]').value = d.node.data;
-          }
-        });
-      });
-
-    document.getElementById('parserForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const form = e.target;
-      const params = new URLSearchParams({
-        query: form.keywords.value,
-        limit: 40,
-        offset: 0,
-        sort_by: 'created_at:desc',
-        'filter_float_price:from': form.price_min.value || 0,
-        'filter_float_price:to': form.price_max.value || 999999,
-        lang: form.lang.value
-      });
-      if (form.category.value) params.append('category_id', form.category.value);
-      try {
-        const resp = await fetch('https://www.olx.ua/api/v1/offers/?' + params.toString(), {
-          headers: { 'Accept-Language': form.lang.value }
-        });
-        const data = await resp.json();
-        const tbody = $('#results tbody').empty();
-        (data.data || []).forEach(offer => {
-          const title = offer.title || '—';
-          const price = (offer.price && offer.price.value) || '—';
-          const city = (offer.location && offer.location.city) || '—';
-          const url = offer.url || '#';
-          tbody.append(`<tr><td>${title}</td><td>${price}</td><td>${city}</td><td><a href="${url}" target="_blank">Ссылка</a></td></tr>`);
-        });
-        if ($.fn.dataTable.isDataTable('#results')) {
-          $('#results').DataTable().destroy();
-        }
-        $('#results').DataTable({
-          language: { url: '//cdn.datatables.net/plug-ins/1.10.21/i18n/Russian.json' }
-        });
-      } catch (err) {
-        alert('Ошибка загрузки: ' + err);
-      }
-    });
-  </script>
+  <script src="app.js"></script>
 
 </body>
 </html>
