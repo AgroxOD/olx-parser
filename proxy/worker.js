@@ -6,7 +6,8 @@ async function handleRequest(request) {
   const url = new URL(request.url);
 
   let endpoint;
-  if (url.pathname === '/offers') {
+  // поддерживаем запросы как на /offers, так и на корневой URL
+  if (url.pathname === '/' || url.pathname === '/offers') {
     endpoint = 'https://www.olx.ua/api/v1/offers';
   } else if (url.pathname === '/offers/categories' || url.pathname === '/categories') {
     endpoint = 'https://www.olx.ua/api/v1/offers/categories';
