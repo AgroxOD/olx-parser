@@ -1,4 +1,4 @@
-// URL вашего прокси. Измените перед публикацией
+// URL вашего прокси. Значение берётся из window.PROXY_URL (см. index.html)
 const PROXY_URL = window.PROXY_URL || 'https://your-proxy.example.com/offers';
 
 // load categories and init jstree
