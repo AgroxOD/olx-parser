@@ -28,6 +28,11 @@ fetch(CATEGORIES_URL)
     }).on('select_node.jstree', (e, d) => {
       if (d.node && d.node.data) {
         document.querySelector('input[name="category"]').value = d.node.data;
+        document.getElementById('categoryDropdown').textContent = d.node.text;
+        const dropdown = bootstrap.Dropdown.getOrCreateInstance(
+          document.getElementById('categoryDropdown')
+        );
+        dropdown.hide();
       }
     });
   });
