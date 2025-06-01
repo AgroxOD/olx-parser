@@ -12,7 +12,11 @@ async function handleRequest(request) {
   apiUrl.search = url.search;
 
   const olxResp = await fetch(apiUrl.toString(), {
-    headers: { 'Accept-Language': request.headers.get('accept-language') || 'en-US' }
+    headers: {
+      'Accept-Language': request.headers.get('accept-language') || 'uk',
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
+      'Referer': 'https://www.olx.ua/'
+    }
   });
 
   const headers = new Headers(olxResp.headers);
