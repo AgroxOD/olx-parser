@@ -21,8 +21,12 @@ params = {
 }
 if category.isdigit():
     params["category_id"] = category
+params["lang"] = lang
 
-headers = {"User-Agent": "Mozilla/5.0"}
+headers = {
+    "User-Agent": "Mozilla/5.0",
+    "Accept-Language": lang,
+}
 
 try:
     resp = requests.get(
@@ -48,10 +52,8 @@ for offer in data.get("data", []):
 os.makedirs("output", exist_ok=True)
 
 
-with open("output/result.csv", "w", newline="", encoding="utf-8") as f:
-    writer = csv.writer(f)
-    writer.writerow(["Название", "Цена", "Город", "Ссылка"])
-    writer.writerows(items)
-
-print(f"Сохранено: {len(items)} объявлений.")
+headers = {
+    "User-Agent": "Mozilla/5.0",
+    "Accept-Language": lang,
+}
 
