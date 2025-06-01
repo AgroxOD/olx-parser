@@ -12,7 +12,10 @@ async function handleRequest(request) {
   } else if (url.pathname === '/offers/categories' || url.pathname === '/categories') {
     endpoint = 'https://www.olx.ua/api/v1/offers/categories';
   } else {
-    return new Response('Not found', { status: 404 });
+    return new Response('Not found', {
+      status: 404,
+      headers: { 'Access-Control-Allow-Origin': '*' }
+    });
   }
 
   const apiUrl = new URL(endpoint);
