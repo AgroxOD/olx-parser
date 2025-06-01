@@ -59,7 +59,14 @@ fetch(CATEGORIES_URL)
     const tbody = $('#results tbody').empty();
     // раньше показывались только объявления с более чем 2000 просмотров
     // теперь выводим все полученные объявления без фильтрации по просмотрам
-    const offers = data.data || [];
+    // OLX может возвращать данные в разных полях,
+    // поэтому собираем все объявления из ответов API
+    const offers = Array.isArray(data.data)
+      ? data.data
+      : [
+          ...(data.data?.promoted || []),
+          ...(data.data?.regular || [])
+        ];
     offers.forEach(offer => {
       const title = offer.title || '—';
       const price = (offer.price && offer.price.value) || '—';
