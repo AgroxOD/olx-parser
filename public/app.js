@@ -1,8 +1,8 @@
 // URL вашего прокси. Значение берётся из window.PROXY_URL (см. index.html)
 const PROXY_URL = window.PROXY_URL || 'https://your-proxy.example.com/offers';
 
-// load categories and init jstree
-const CATEGORIES_URL = 'https://www.olx.ua/api/v1/partner/categories';
+// load categories and init jstree through the proxy to avoid CORS
+const CATEGORIES_URL = PROXY_URL + '/categories';
 fetch(CATEGORIES_URL)
   .then(res => res.json())
   .then(data => {
@@ -19,7 +19,9 @@ fetch(CATEGORIES_URL)
         return node;
       });
 
-    const categories = data.data || data.categories || [];
+    // the API may return categories in different fields
+    const categories =
+      (data.data && data.data.categories) || data.categories || data.data || [];
     const treeData = buildTree(categories);
     $('#category-tree').jstree({
       core: { data: treeData }
