@@ -22,15 +22,15 @@ fetch('categories.json')
  document.getElementById('parserForm').addEventListener('submit', async (e) => {
    e.preventDefault();
    const form = e.target;
-   const params = new URLSearchParams({
-     query: form.keywords.value,
-     limit: 40,
-     offset: 0,
-     sort_by: 'created_at:desc',
-     'filter_float_price:from': form.price_min.value || 0,
-     'filter_float_price:to': form.price_max.value || 999999,
-     lang: form.lang.value
-   });
+  const params = new URLSearchParams({
+    query: form.keywords.value,
+    limit: 40,
+    offset: 0,
+    sort_by: form.sort_by ? form.sort_by.value : 'created_at:desc',
+    'filter_float_price:from': form.price_min.value || 0,
+    'filter_float_price:to': form.price_max.value || 999999,
+    lang: form.lang.value
+  });
    if (form.category.value) params.append('category_id', form.category.value);
   try {
     const resp = await fetch(PROXY_URL + '?' + params.toString(), {
