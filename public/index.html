@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>OLX Парсер</title>
+</head>
+<body>
+  <h2>Параметры поиска</h2>
+  <form id="parserForm">
+    <label>Категория: <input type="text" name="category" value="elektronika/telefony" /></label><br/>
+    <label>Ключевики: <input type="text" name="keywords" value="iPhone" /></label><br/>
+    <label>Цена от: <input type="number" name="price_min" value="3000" /></label><br/>
+    <label>Цена до: <input type="number" name="price_max" value="15000" /></label><br/>
+    <label>Язык:
+      <select name="lang">
+        <option value="uk">uk</option>
+        <option value="ru">ru</option>
+      </select>
+    </label><br/><br/>
+    <button type="submit">Сохранить конфиг</button>
+  </form>
+
+  <script>
+    document.getElementById("parserForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const form = e.target;
+      const data = {
+        category: form.category.value,
+        keywords: form.keywords.value,
+        price_min: Number(form.price_min.value),
+        price_max: Number(form.price_max.value),
+        lang: form.lang.value
+      };
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "config.json";
+      a.click();
+    });
+  </script>
+
+  <br/><br/>
+  <a href="olx-result.html" target="_blank">
+    <button style="padding: 10px 20px; font-size: 16px;">Открыть результаты</button>
+  </a>
+
+</body>
+</html>

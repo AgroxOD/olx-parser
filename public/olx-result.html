@@ -1,0 +1,37 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Результаты парсинга OLX</title>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css"/>
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js"></script>
+</head>
+<body>
+    <h2>Результаты OLX</h2>
+    <table id="results" class="display" style="width:100%">
+        <table border="1" class="dataframe display" id="results">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Название</th>
+      <th>Цена</th>
+      <th>Город</th>
+      <th>Ссылка</th>
+    </tr>
+  </thead>
+  <tbody>
+  </tbody>
+</table>
+    </table>
+    <script>
+        $(document).ready(function() {
+            $('#results').DataTable({
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.10.21/i18n/Russian.json"
+                }
+            });
+        });
+    </script>
+</body>
+</html>
