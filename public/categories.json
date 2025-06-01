@@ -1,0 +1,10 @@
+{
+  "Электроника": {
+    "Телефоны": "elektronika/telefony",
+    "Ноутбуки": "elektronika/noutbuki-i-aksesuary"
+  },
+  "Транспорт": {
+    "Легковые авто": "transport/legkovye-avtomobili",
+    "Мото": "transport/moto"
+  }
+}

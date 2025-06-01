@@ -1,0 +1,15 @@
+# Python artifacts
+__pycache__/
+*.py[cod]
+
+# Output
+output/
+
+# OS files
+.DS_Store
+
+# Env
+.env
+
+# misc
+*.zip

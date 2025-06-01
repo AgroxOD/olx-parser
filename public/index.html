@@ -2,26 +2,67 @@
 <html>
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>OLX Парсер</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.12/themes/default/style.min.css" rel="stylesheet">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.12/jstree.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </head>
-<body>
-  <h2>Параметры поиска</h2>
-  <form id="parserForm">
-    <label>Категория: <input type="text" name="category" value="elektronika/telefony" /></label><br/>
-    <label>Ключевики: <input type="text" name="keywords" value="iPhone" /></label><br/>
-    <label>Цена от: <input type="number" name="price_min" value="3000" /></label><br/>
-    <label>Цена до: <input type="number" name="price_max" value="15000" /></label><br/>
-    <label>Язык:
-      <select name="lang">
-        <option value="uk">uk</option>
-        <option value="ru">ru</option>
-      </select>
-    </label><br/><br/>
-    <button type="submit">Сохранить конфиг</button>
+<body class="container py-4">
+  <h2 class="mb-3">Параметры поиска</h2>
+  <form id="parserForm" class="vstack gap-3">
+    <div>
+      <label class="form-label">Категория:</label>
+      <div id="category-tree" class="border rounded p-2" style="max-height: 300px; overflow:auto;"></div>
+      <input type="hidden" name="category" value="elektronika/telefony">
+    </div>
+    <div>
+      <label class="form-label">Ключевики:<input type="text" class="form-control" name="keywords" value="iPhone" /></label>
+    </div>
+    <div class="row">
+      <div class="col">
+        <label class="form-label">Цена от:<input type="number" class="form-control" name="price_min" value="3000" /></label>
+      </div>
+      <div class="col">
+        <label class="form-label">Цена до:<input type="number" class="form-control" name="price_max" value="15000" /></label>
+      </div>
+    </div>
+    <div>
+      <label class="form-label">Язык:
+        <select name="lang" class="form-select w-auto d-inline-block">
+          <option value="uk">uk</option>
+          <option value="ru">ru</option>
+        </select>
+      </label>
+    </div>
+    <button type="submit" class="btn btn-primary">Сохранить конфиг</button>
   </form>
 
+  <div class="mt-4">
+    <a href="olx-result.html" target="_blank" class="btn btn-success">Открыть результаты</a>
+  </div>
+
   <script>
-    document.getElementById("parserForm").addEventListener("submit", async (e) => {
+    // load categories and init jstree
+    fetch('categories.json')
+      .then(res => res.json())
+      .then(data => {
+        const treeData = Object.entries(data).map(([k, v]) => ({
+          text: k,
+          children: Object.entries(v).map(([ck, cv]) => ({ text: ck, data: cv, icon: 'bi bi-file-earmark' }))
+        }));
+        $('#category-tree').jstree({
+          core: { data: treeData }
+        }).on('select_node.jstree', (e, d) => {
+          if (d.node && d.node.data) {
+            document.querySelector('input[name="category"]').value = d.node.data;
+          }
+        });
+      });
+
+    document.getElementById('parserForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const form = e.target;
       const data = {
@@ -31,19 +72,14 @@
         price_max: Number(form.price_max.value),
         lang: form.lang.value
       };
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
+      const a = document.createElement('a');
       a.href = url;
-      a.download = "config.json";
+      a.download = 'config.json';
       a.click();
     });
   </script>
-
-  <br/><br/>
-  <a href="olx-result.html" target="_blank">
-    <button style="padding: 10px 20px; font-size: 16px;">Открыть результаты</button>
-  </a>
 
 </body>
 </html>
