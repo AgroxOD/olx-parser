@@ -57,7 +57,9 @@ fetch(CATEGORIES_URL)
     });
     const data = await resp.json();
     const tbody = $('#results tbody').empty();
-    const offers = (data.data || []).filter(offer => offer.stats?.views > 2000);
+    // раньше показывались только объявления с более чем 2000 просмотров
+    // теперь выводим все полученные объявления без фильтрации по просмотрам
+    const offers = data.data || [];
     offers.forEach(offer => {
       const title = offer.title || '—';
       const price = (offer.price && offer.price.value) || '—';
