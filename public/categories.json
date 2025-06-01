@@ -1,29 +1,10 @@
 {
   "Электроника": {
     "Телефоны": "elektronika/telefony",
-    "Ноутбуки": "elektronika/noutbuki-i-aksesuary",
-    "Телевизоры": "elektronika/tv-audio-video",
-    "Фотоаппараты": "elektronika/foto"
+    "Ноутбуки": "elektronika/noutbuki-i-aksesuary"
   },
   "Транспорт": {
     "Легковые авто": "transport/legkovye-avtomobili",
-    "Мото": "transport/moto",
-    "Автобусы": "transport/avtobusy",
-    "Грузовики": "transport/gruzovye-avtomobili"
-  },
-  "Недвижимость": {
-    "Квартиры": "nedvizhimost/kvartiry",
-    "Дома": "nedvizhimost/doma",
-    "Коммерческая": "nedvizhimost/kommercheskaya-nedvizhimost"
-  },
-  "Работа": {
-    "IT, компьютеры": "rabota/it-kompyutery",
-    "Продажи": "rabota/prodazhi",
-    "Строительство": "rabota/stroitelstvo"
-  },
-  "Дом и сад": {
-    "Мебель": "dlya-doma-i-dachi/mebel-i-interer",
-    "Сад/огород": "dlya-doma-i-dachi/sad-ogorod",
-    "Инструменты": "dlya-doma-i-dachi/instrumenty"
+    "Мото": "transport/moto"
   }
 }
