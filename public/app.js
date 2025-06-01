@@ -36,15 +36,23 @@ fetch('categories.json')
     const resp = await fetch(PROXY_URL + '?' + params.toString(), {
       headers: { 'Accept-Language': form.lang.value }
     });
-     const data = await resp.json();
-     const tbody = $('#results tbody').empty();
-     (data.data || []).forEach(offer => {
-       const title = offer.title || '—';
-       const price = (offer.price && offer.price.value) || '—';
-       const city = (offer.location && offer.location.city) || '—';
-       const url = offer.url || '#';
-       tbody.append(`<tr><td>${title}</td><td>${price}</td><td>${city}</td><td><a href="${url}" target="_blank">Ссылка</a></td></tr>`);
-     });
+    const data = await resp.json();
+    const tbody = $('#results tbody').empty();
+    (data.data || []).forEach(offer => {
+      const title = offer.title || '—';
+      const price = (offer.price && offer.price.value) || '—';
+      const city = (offer.location && offer.location.city) || '—';
+      const url = offer.url || '#';
+
+      const tr = $('<tr>');
+      $('<td>').text(title).appendTo(tr);
+      $('<td>').text(price).appendTo(tr);
+      $('<td>').text(city).appendTo(tr);
+      $('<td>').append(
+        $('<a>').attr('href', url).attr('target', '_blank').text('Ссылка')
+      ).appendTo(tr);
+      tbody.append(tr);
+    });
      if ($.fn.dataTable.isDataTable('#results')) {
        $('#results').DataTable().destroy();
      }
