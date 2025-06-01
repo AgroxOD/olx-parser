@@ -2,13 +2,25 @@
 const PROXY_URL = window.PROXY_URL || 'https://your-proxy.example.com/offers';
 
 // load categories and init jstree
-fetch('categories.json')
+const CATEGORIES_URL = 'https://www.olx.ua/api/v1/partner/categories';
+fetch(CATEGORIES_URL)
   .then(res => res.json())
   .then(data => {
-    const treeData = Object.entries(data).map(([k, v]) => ({
-      text: k,
-      children: Object.entries(v).map(([ck, cv]) => ({ text: ck, data: cv, icon: 'bi bi-file-earmark' }))
-    }));
+    const buildTree = (items, prefix = '') =>
+      (items || []).map(c => {
+        const slug = c.slug ? (prefix ? `${prefix}/${c.slug}` : c.slug) : c.id;
+        const node = { text: c.name || c.title, data: slug };
+        const children = c.children || c.subcategories;
+        if (children && children.length) {
+          node.children = buildTree(children, slug);
+        } else {
+          node.icon = 'bi bi-file-earmark';
+        }
+        return node;
+      });
+
+    const categories = data.data || data.categories || [];
+    const treeData = buildTree(categories);
     $('#category-tree').jstree({
       core: { data: treeData }
     }).on('select_node.jstree', (e, d) => {
