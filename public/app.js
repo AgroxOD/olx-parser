@@ -106,7 +106,13 @@ document.getElementById('parserForm').addEventListener('submit', async e => {
       $('<td>').text(price).appendTo(tr);
       $('<td>').text(city).appendTo(tr);
       $('<td>')
-        .append($('<a>').attr('href', url).attr('target', '_blank').text('Ссылка'))
+        .append(
+          $('<a>')
+            .attr('href', url)
+            .attr('target', '_blank')
+            .attr('rel', 'noopener noreferrer')
+            .text('Ссылка')
+        )
         .appendTo(tr);
       tbody.append(tr);
     });
