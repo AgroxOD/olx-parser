@@ -4,15 +4,18 @@ addEventListener('fetch', event => {
 
 async function handleRequest(request) {
   const url = new URL(request.url);
-  let apiUrl;
+
+  let endpoint;
   if (url.pathname === '/offers') {
-    apiUrl = new URL('https://www.olx.ua/api/v1/offers');
-    apiUrl.search = url.search;
-  } else if (url.pathname === '/offers/categories') {
-    apiUrl = new URL('https://www.olx.ua/api/v1/offers/categories');
+    endpoint = 'https://www.olx.ua/api/v1/offers';
+  } else if (url.pathname === '/offers/categories' || url.pathname === '/categories') {
+    endpoint = 'https://www.olx.ua/api/v1/offers/categories';
   } else {
     return new Response('Not found', { status: 404 });
   }
+
+  const apiUrl = new URL(endpoint);
+  apiUrl.search = url.search;
 
   const olxResp = await fetch(apiUrl.toString(), {
     headers: {
