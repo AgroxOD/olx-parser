@@ -2,48 +2,114 @@
 <html>
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>OLX Парсер</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.12/themes/default/style.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css"/>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.12/jstree.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js"></script>
 </head>
-<body>
-  <h2>Параметры поиска</h2>
-  <form id="parserForm">
-    <label>Категория: <input type="text" name="category" value="elektronika/telefony" /></label><br/>
-    <label>Ключевики: <input type="text" name="keywords" value="iPhone" /></label><br/>
-    <label>Цена от: <input type="number" name="price_min" value="3000" /></label><br/>
-    <label>Цена до: <input type="number" name="price_max" value="15000" /></label><br/>
-    <label>Язык:
-      <select name="lang">
-        <option value="uk">uk</option>
-        <option value="ru">ru</option>
-      </select>
-    </label><br/><br/>
-    <button type="submit">Сохранить конфиг</button>
+<body class="container py-4">
+  <h2 class="mb-3">Параметры поиска</h2>
+  <form id="parserForm" class="vstack gap-3">
+    <div>
+      <label class="form-label">Категория:</label>
+      <div id="category-tree" class="border rounded p-2" style="max-height: 300px; overflow:auto;"></div>
+      <input type="hidden" name="category" value="elektronika/telefony">
+    </div>
+    <div>
+      <label class="form-label">Ключевики:<input type="text" class="form-control" name="keywords" value="iPhone" /></label>
+    </div>
+    <div class="row">
+      <div class="col">
+        <label class="form-label">Цена от:<input type="number" class="form-control" name="price_min" value="3000" /></label>
+      </div>
+      <div class="col">
+        <label class="form-label">Цена до:<input type="number" class="form-control" name="price_max" value="15000" /></label>
+      </div>
+    </div>
+    <div>
+      <label class="form-label">Язык:
+        <select name="lang" class="form-select w-auto d-inline-block">
+          <option value="uk">uk</option>
+          <option value="ru">ru</option>
+        </select>
+      </label>
+    </div>
+    <button type="submit" class="btn btn-primary">Найти</button>
   </form>
 
+  <table id="results" class="table table-striped display mt-4" style="width:100%">
+    <thead>
+      <tr>
+        <th>Название</th>
+        <th>Цена</th>
+        <th>Город</th>
+        <th>Ссылка</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
   <script>
-    document.getElementById("parserForm").addEventListener("submit", async (e) => {
+    // load categories and init jstree
+    fetch('categories.json')
+      .then(res => res.json())
+      .then(data => {
+        const treeData = Object.entries(data).map(([k, v]) => ({
+          text: k,
+          children: Object.entries(v).map(([ck, cv]) => ({ text: ck, data: cv, icon: 'bi bi-file-earmark' }))
+        }));
+        $('#category-tree').jstree({
+          core: { data: treeData }
+        }).on('select_node.jstree', (e, d) => {
+          if (d.node && d.node.data) {
+            document.querySelector('input[name="category"]').value = d.node.data;
+          }
+        });
+      });
+
+    document.getElementById('parserForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const form = e.target;
-      const data = {
-        category: form.category.value,
-        keywords: form.keywords.value,
-        price_min: Number(form.price_min.value),
-        price_max: Number(form.price_max.value),
+      const params = new URLSearchParams({
+        query: form.keywords.value,
+        limit: 40,
+        offset: 0,
+        sort_by: 'created_at:desc',
+        'filter_float_price:from': form.price_min.value || 0,
+        'filter_float_price:to': form.price_max.value || 999999,
         lang: form.lang.value
-      };
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "config.json";
-      a.click();
+      });
+      if (form.category.value) params.append('category_id', form.category.value);
+      try {
+        const resp = await fetch('https://www.olx.ua/api/v1/offers/?' + params.toString(), {
+          headers: { 'Accept-Language': form.lang.value }
+        });
+        const data = await resp.json();
+        const tbody = $('#results tbody').empty();
+        (data.data || []).forEach(offer => {
+          const title = offer.title || '—';
+          const price = (offer.price && offer.price.value) || '—';
+          const city = (offer.location && offer.location.city) || '—';
+          const url = offer.url || '#';
+          tbody.append(`<tr><td>${title}</td><td>${price}</td><td>${city}</td><td><a href="${url}" target="_blank">Ссылка</a></td></tr>`);
+        });
+        if ($.fn.dataTable.isDataTable('#results')) {
+          $('#results').DataTable().destroy();
+        }
+        $('#results').DataTable({
+          language: { url: '//cdn.datatables.net/plug-ins/1.10.21/i18n/Russian.json' }
+        });
+      } catch (err) {
+        alert('Ошибка загрузки: ' + err);
+      }
     });
   </script>
-
-  <br/><br/>
-  <a href="olx-result.html" target="_blank">
-    <button style="padding: 10px 20px; font-size: 16px;">Открыть результаты</button>
-  </a>
 
 </body>
 </html>

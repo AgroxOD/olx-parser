@@ -1,0 +1,64 @@
+name: Build OLX Result
+
+on:
+  push:
+    paths:
+      - 'input/config.json'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt pandas beautifulsoup4
+
+      - name: Run parser
+        run: python parser/olx_parser.py
+
+      - name: Generate HTML table
+        run: |
+          python <<EOF
+import pandas as pd
+
+df = pd.read_csv('output/result.csv')
+html_table = df.to_html(index=False, escape=False, classes='display', table_id='results')
+html_code = f"""<!DOCTYPE html>
+<html><head>
+<meta charset='UTF-8'>
+<title>Результаты</title>
+<link rel='stylesheet' href='https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css'/>
+<script src='https://code.jquery.com/jquery-3.5.1.js'></script>
+<script src='https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js'></script>
+</head><body>
+<h2>Результаты OLX</h2>
+<table id='results' class='display'>{html_table}</table>
+<script>
+$(document).ready(function() {{
+  $('#results').DataTable({{
+    "language": {{
+      "url": "//cdn.datatables.net/plug-ins/1.10.21/i18n/Russian.json"
+    }}
+  }});
+}});
+</script></body></html>"""
+
+with open("public/olx-result.html", "w", encoding="utf-8") as f:
+    f.write(html_code)
+EOF
+
+      - name: Commit result
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add public/olx-result.html
+          git commit -m "🧾 Обновлён результат парсинга" || echo "No changes"
+          git push
