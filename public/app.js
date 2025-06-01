@@ -59,9 +59,7 @@ fetch(CATEGORIES_URL)
         }
       });
     })
-    .catch(err => {
-      log('Ошибка загрузки категорий: ' + err);
-    });
+    .catch(err => log('Ошибка загрузки категорий: ' + err));
 
 // обработка отправки формы
 document.getElementById('parserForm').addEventListener('submit', async e => {
