@@ -1,3 +1,6 @@
+// URL вашего прокси. Измените перед публикацией
+const PROXY_URL = window.PROXY_URL || 'https://your-proxy.example.com/offers';
+
 // load categories and init jstree
 fetch('categories.json')
   .then(res => res.json())
@@ -29,10 +32,10 @@ fetch('categories.json')
      lang: form.lang.value
    });
    if (form.category.value) params.append('category_id', form.category.value);
-   try {
-     const resp = await fetch('https://www.olx.ua/api/v1/offers/?' + params.toString(), {
-       headers: { 'Accept-Language': form.lang.value }
-     });
+  try {
+    const resp = await fetch(PROXY_URL + '?' + params.toString(), {
+      headers: { 'Accept-Language': form.lang.value }
+    });
      const data = await resp.json();
      const tbody = $('#results tbody').empty();
      (data.data || []).forEach(offer => {
