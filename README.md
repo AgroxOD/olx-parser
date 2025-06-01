@@ -28,6 +28,7 @@ window.PROXY_URL = 'https://rapid-bar-2ad1.omkrishna-narayana.workers.dev/offers
 ```
 
 Укажите адрес своего Worker. Все запросы к OLX будут отправляться через него.
+Обратите внимание, что адрес не должен оканчиваться слешем.
 
 ### Проверка прокси
 
