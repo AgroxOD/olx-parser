@@ -10,7 +10,6 @@ category = str(config.get("category", ""))
 keywords = config.get("keywords", "")
 price_min = config.get("price_min", 0)
 price_max = config.get("price_max", 999999)
-lang = config.get("lang", "uk")
 
 params = {
     "query": keywords,
@@ -52,9 +51,9 @@ for offer in data.get("data", []):
 
 os.makedirs("output", exist_ok=True)
 
-with open("output/result.csv", "w", newline="", encoding="utf-8") as f:
-    writer = csv.writer(f)
-    writer.writerow(["Название", "Цена", "Город", "Ссылка"])
-    writer.writerows(items)
 
-print(f"Сохранено: {len(items)} объявлений.")
+headers = {
+    "User-Agent": "Mozilla/5.0",
+    "Accept-Language": lang,
+}
+
