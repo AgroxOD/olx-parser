@@ -1,4 +1,5 @@
 // URL вашего прокси. Значение берётся из window.PROXY_URL (см. index.html)
+// Прокси сам загружает страницу OLX и возвращает данные в JSON
 const PROXY_URL = window.PROXY_URL || 'https://your-proxy.example.com/offers';
 
 function log(message) {
@@ -9,10 +10,11 @@ function log(message) {
   el.scrollTop = el.scrollHeight;
 }
 
+// простая проверка работоспособности прокси
 document.getElementById('testButton').addEventListener('click', async () => {
   log('Запуск теста...');
   try {
-    const resp = await fetch(PROXY_URL + '?limit=1');
+    const resp = await fetch(PROXY_URL + '?q=test');
     log('HTTP ' + resp.status);
     const data = await resp.json();
     const count = Array.isArray(data.data) ? data.data.length : 0;
@@ -40,10 +42,8 @@ fetch(CATEGORIES_URL)
         return node;
       });
 
-    // API может возвращать категории в разных полях
-    const categories = Array.isArray(data.data?.categories)
-      ? data.data.categories
-      : Array.isArray(data.categories)
+    // прокси отдаёт категории одним списком
+    const categories = Array.isArray(data.categories)
       ? data.categories
       : Array.isArray(data.data)
       ? data.data
@@ -91,21 +91,13 @@ document.getElementById('parserForm').addEventListener('submit', async e => {
     }
     const data = await resp.json();
     const tbody = $('#results tbody').empty();
-    // раньше показывались только объявления с более чем 2000 просмотров
-    // теперь выводим все полученные объявления без фильтрации по просмотрам
-    // OLX может возвращать данные в разных полях,
-    // поэтому собираем все объявления из ответов API
-    const offers = Array.isArray(data.data)
-      ? data.data
-      : [
-          ...(data.data?.promoted || []),
-          ...(data.data?.regular || [])
-        ];
+    // теперь прокси возвращает уже распарсенные данные
+    const offers = Array.isArray(data.data) ? data.data : [];
     offers.forEach(offer => {
       const title = offer.title || '—';
-      const price = (offer.price && offer.price.value) || '—';
-      const city = (offer.location && offer.location.city) || '—';
-      const url = offer.url || '#';
+      const price = offer.price || '—';
+      const city = offer.city || '—';
+      const url = offer.link || '#';
 
       const tr = $('<tr>');
       $('<td>').text(title).appendTo(tr);
