@@ -41,8 +41,13 @@ fetch(CATEGORIES_URL)
       });
 
     // API может возвращать категории в разных полях
-    const categories =
-      (data.data && data.data.categories) || data.categories || data.data || [];
+    const categories = Array.isArray(data.data?.categories)
+      ? data.data.categories
+      : Array.isArray(data.categories)
+      ? data.categories
+      : Array.isArray(data.data)
+      ? data.data
+      : [];
     const treeData = buildTree(categories);
     $('#category-tree')
       .jstree({
