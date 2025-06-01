@@ -33,8 +33,29 @@ fetch(CATEGORIES_URL)
           document.getElementById('categoryDropdown')
         );
         dropdown.hide();
-      }
-    });
+  }
+});
+
+function log(message) {
+  const el = document.getElementById('logConsole');
+  if (!el) return;
+  const time = new Date().toLocaleTimeString();
+  el.textContent += `[${time}] ${message}\n`;
+  el.scrollTop = el.scrollHeight;
+}
+
+document.getElementById('testButton').addEventListener('click', async () => {
+  log('Запуск теста...');
+  try {
+    const resp = await fetch(PROXY_URL + '?limit=1');
+    log('HTTP ' + resp.status);
+    const data = await resp.json();
+    const count = Array.isArray(data.data) ? data.data.length : 0;
+    log('Получено ' + count + ' объявл.');
+  } catch (err) {
+    log('Ошибка: ' + err);
+  }
+});
   });
 
 // handle form submit
