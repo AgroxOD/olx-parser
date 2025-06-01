@@ -24,11 +24,17 @@ node proxy/server.js
 Затем меняйте URL запросов в клиентском коде на адрес своего прокси, например
 `http://localhost:3000/offers`.
 
+### Пример прокси на Cloudflare Workers
+
+Файл `proxy/worker.js` содержит минимальный скрипт для Cloudflare Workers, который проксирует запросы к OLX. Создайте новый Worker в панели Cloudflare, замените его содержимое кодом из этого файла и опубликуйте его.
+
+После развертывания укажите адрес Worker в переменной `PROXY_URL`, например `https://your-worker.workers.dev/offers`.
+
 ## Хостинг на GitHub Pages
 
 1. Сделайте fork репозитория или склонируйте его.
 2. В настройках GitHub Pages выберите режим `Deploy from a folder` и укажите каталог `public`.
-3. Разверните `proxy/server.js` на любой serverless‑платформе (Vercel, Cloudflare Workers и т.п.).
+3. Разверните `proxy/server.js` или код из `proxy/worker.js` на любой serverless‑платформе (Vercel, Cloudflare Workers и т.п.).
 4. В `public/app.js` задайте переменную `PROXY_URL` с адресом вашего прокси.
 5. После публикации перейдите по URL вашей страницы GitHub Pages.
 
