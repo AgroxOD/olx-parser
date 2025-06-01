@@ -55,6 +55,11 @@ fetch(CATEGORIES_URL)
     const resp = await fetch(PROXY_URL + '?' + params.toString(), {
       headers: { 'Accept-Language': form.lang.value || 'uk' }
     });
+    // проверяем, что сервер вернул успешный статус
+    if (!resp.ok) {
+      alert('Ошибка сервера: ' + resp.status);
+      return;
+    }
     const data = await resp.json();
     const tbody = $('#results tbody').empty();
     // раньше показывались только объявления с более чем 2000 просмотров
