@@ -16,6 +16,10 @@ async function loadOffers(search) {
     }
   });
 
+  if (!resp.ok) {
+    throw new Error('Bad upstream status: ' + resp.status);
+  }
+
   const html = await resp.text();
   const doc = new DOMParser().parseFromString(html, 'text/html');
 
@@ -38,6 +42,10 @@ async function loadOffers(search) {
  */
 async function loadCategories() {
   const resp = await fetch('https://www.olx.ua/api/v1/offers/categories');
+
+  if (!resp.ok) {
+    throw new Error('Bad upstream status: ' + resp.status);
+  }
   const data = await resp.json();
   const categories = data.categories || data.data?.categories || data.data || [];
   return categories;
@@ -46,30 +54,38 @@ async function loadCategories() {
 async function handleRequest(request) {
   const url = new URL(request.url);
 
-  if (url.pathname === '/' || url.pathname === '/offers') {
-    const offers = await loadOffers(url.search);
-    const body = JSON.stringify({ data: offers });
-    return new Response(body, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
-      }
+  try {
+    if (url.pathname === '/' || url.pathname === '/offers') {
+      const offers = await loadOffers(url.search);
+      const body = JSON.stringify({ data: offers });
+      return new Response(body, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        }
+      });
+    }
+
+    if (url.pathname === '/offers/categories' || url.pathname === '/categories') {
+      const categories = await loadCategories();
+      const body = JSON.stringify({ categories });
+      return new Response(body, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        }
+      });
+    }
+
+    return new Response('Not found', {
+      status: 404,
+      headers: { 'Access-Control-Allow-Origin': '*' }
+    });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Upstream error';
+    return new Response(message, {
+      status: 502,
+      headers: { 'Access-Control-Allow-Origin': '*' }
     });
   }
-
-  if (url.pathname === '/offers/categories' || url.pathname === '/categories') {
-    const categories = await loadCategories();
-    const body = JSON.stringify({ categories });
-    return new Response(body, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
-      }
-    });
-  }
-
-  return new Response('Not found', {
-    status: 404,
-    headers: { 'Access-Control-Allow-Origin': '*' }
-  });
 }
