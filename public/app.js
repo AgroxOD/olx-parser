@@ -1,6 +1,8 @@
 // URL вашего прокси. Значение берётся из window.PROXY_URL (см. index.html)
 // Прокси сам загружает страницу OLX и возвращает данные в JSON
-const PROXY_URL = window.PROXY_URL || 'https://your-proxy.example.com/offers';
+// Удаляем завершающий слеш, если он есть
+const PROXY_URL = (window.PROXY_URL || 'https://your-proxy.example.com/offers')
+  .replace(/\/$/, '');
 
 function log(message) {
   const el = document.getElementById('logConsole');
